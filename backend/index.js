@@ -1,11 +1,14 @@
 const express = require('express');
 const crypto = require("crypto");
+const cors = require('cors');
 const Joi = require("joi");
+const pool = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use(cors());
 app.use((req, res, next) => {
     const now = new Date().toISOString();
     console.log(`[INFO] ${now} ${req.method} ${req.originalUrl} - IP: ${req.ip}`);
@@ -71,7 +74,6 @@ app.post("/logout", async (req, res) => {
 // Эндпоинт POST /hash
 app.post("/hash", async (req, res) => {
     const { error, value } = hashSchema.validate(req.body, { abortEarly: false });
-
     if (error) {
         const errors = error.details.map(detail => detail.message);
         await logEvent(value?.user_id || null, "hash_validation_error", {
