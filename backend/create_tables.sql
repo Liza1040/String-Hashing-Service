@@ -6,3 +6,11 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     user_agent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR,
+    operation VARCHAR NOT NULL,
+    meta JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
