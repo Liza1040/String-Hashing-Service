@@ -1,10 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import { Container, TextField, Button, MenuItem, Typography, Box } from "@mui/material";
 
+
 export default function Home() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [input, setInput] = useState("");
     const [algorithm, setAlgorithm] = useState("sha256");
     const [result, setResult] = useState("");
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/login");
+        }
+    }, [status, router]);
+    if (status === "loading") {
+        return <p>Загрузка сессии...</p>;
+    }
+    if (!session) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
