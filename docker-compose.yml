@@ -23,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=01012002
       - POSTGRES_DB=stringHashingDB
     ports:
-      - "1234:5432"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
