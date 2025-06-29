@@ -3,6 +3,8 @@ const crypto = require("crypto");
 const cors = require('cors');
 const Joi = require("joi");
 const pool = require('./db');
+const jwt = require('jsonwebtoken');
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -110,6 +112,42 @@ app.post("/hash", async (req, res) => {
         return res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
 });
+
+function extractUser(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Нет токена авторизации' });
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+        req.role = decoded;
+        console.log(decoded)
+        next();
+    } catch (error) {
+        return res.status(401).json({ error: 'Неверный токен' });
+    }
+}
+
+function adminMiddleware(req, res, next) {
+    if (req.role === 'admin') {
+        return next();
+    }
+    return res.status(403).json({ error: 'Доступ запрещен. Недостаточно прав.' });
+}
+
+app.get('/audit', async (req, res) => {
+    try {
+        const query = 'SELECT id, user_id, operation, meta, created_at FROM audit_logs ORDER BY created_at DESC';
+        const result = await pool.query(query);
+        console.log("res3 " + result);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Ошибка получения логов аудита:', error);
+        res.status(500).json({ error: 'Не удалось получить логи аудита' });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Backend запущен на порту ${PORT}`);

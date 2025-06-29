@@ -6,8 +6,35 @@ export default NextAuth({
         YandexProvider({
             clientId: process.env.YANDEX_CLIENT_ID,
             clientSecret: process.env.YANDEX_CLIENT_SECRET,
-            scope: "login:email"
+            scope: "login:email",
+            profile: (data) => {
+                return {
+                    id: data.id,
+                    name: data.realname,
+                    email: data.default_email,
+                };
+            },
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
+    callbacks: {
+        async jwt({ token, user, account, profile }) {
+            // При первом входе (когда account и profile доступны)
+            if (user && !token.role) {
+                token.role = user.email === "elizaveta1040maximova@yandex.ru"  ? "admin" : "user";
+            }
+            if (user) {
+                token.token = account?.access_token;
+            }
+            console.log(token);
+            return token;
+        },
+        async session({ session, token }) {
+            // Передача роли из токена в session.user
+            session.user.role = token.role;
+            session.user.token = token.token;
+            console.log("токен " + token);
+            return session;
+        },
+    },
 });

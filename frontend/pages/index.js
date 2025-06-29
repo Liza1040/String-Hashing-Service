@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { Container, TextField, Button, MenuItem, Typography, Box } from "@mui/material";
+import Link from "next/link";
 
 
 export default function Home() {
@@ -10,6 +11,21 @@ export default function Home() {
     const [input, setInput] = useState("");
     const [algorithm, setAlgorithm] = useState("sha256");
     const [result, setResult] = useState("");
+
+    useEffect(() => {
+        if (session) {
+            fetch("http://localhost:3001/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ user_id: session.user.email }),
+            })
+                .then((res) => res.json())
+                .then((data) => console.log("Audit log sent:", data))
+                .catch((err) => console.error("Error sending audit log:", err));
+        }
+    }, [session]);
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -80,6 +96,15 @@ export default function Home() {
                     <Typography variant="body1">{result}</Typography>
                 </Box>
             )}
+            {session.user.role === "admin" && (
+            <Box sx={{ mt: 4, textAlign: "center" }}>
+                <Link href="/audit" passHref legacyBehavior>
+                    <Button variant="outlined" color="primary">
+                        Перейти к аудиту логов
+                    </Button>
+                </Link>
+            </Box>
+        )}
         </Container>
     );
 }
