@@ -40,7 +40,6 @@ export default function Home() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log(input, algorithm)
             const res = await fetch("http://localhost:3001/hash", {
                 method: "POST",
                 headers: {
@@ -48,7 +47,6 @@ export default function Home() {
                 },
                 body: JSON.stringify({ input, algorithm })
             });
-            console.log(input, algorithm)
             const data = await res.json();
             if (res.ok) {
                 setResult(data.hash);

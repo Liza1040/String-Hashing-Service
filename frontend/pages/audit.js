@@ -91,7 +91,6 @@ export async function getServerSideProps(context) {
     }
 
     try {
-        console.log(session.user.role)
         const res = await fetch('http://localhost:3001/audit', {
             method: "GET",
             headers: {

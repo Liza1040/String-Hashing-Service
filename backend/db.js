@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgres://postgres:01012002@localhost:5432/stringHashingDB',
+    connectionString: 'postgres://postgres:01012002@db:5432/stringHashingDB',
 });
 
 module.exports = {

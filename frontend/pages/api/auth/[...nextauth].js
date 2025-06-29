@@ -26,14 +26,12 @@ export default NextAuth({
             if (user) {
                 token.token = account?.access_token;
             }
-            console.log(token);
             return token;
         },
         async session({ session, token }) {
             // Передача роли из токена в session.user
             session.user.role = token.role;
             session.user.token = token.token;
-            console.log("токен " + token);
             return session;
         },
     },

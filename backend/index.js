@@ -122,7 +122,6 @@ function extractUser(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
         req.role = decoded;
-        console.log(decoded)
         next();
     } catch (error) {
         return res.status(401).json({ error: 'Неверный токен' });
@@ -140,7 +139,6 @@ app.get('/audit', async (req, res) => {
     try {
         const query = 'SELECT id, user_id, operation, meta, created_at FROM audit_logs ORDER BY created_at DESC';
         const result = await pool.query(query);
-        console.log("res3 " + result);
         res.json(result.rows);
     } catch (error) {
         console.error('Ошибка получения логов аудита:', error);
